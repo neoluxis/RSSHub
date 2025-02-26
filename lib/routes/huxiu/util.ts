@@ -30,15 +30,17 @@ const cleanUpHTML = (data) => {
     $('em.vote__bar, div.vote__btn, div.vote__time').remove();
     $('p img').each((_, e) => {
         e = $(e);
-        e.parent().replaceWith(
-            art(path.join(__dirname, 'templates/description.art'), {
-                image: {
-                    src: (e.prop('src') ?? e.prop('_src')).split(/\?/)[0],
-                    width: e.prop('data-w'),
-                    height: e.prop('data-h'),
-                },
-            })
-        );
+        if ((e.prop('src') ?? e.prop('_src')) !== undefined) {
+            e.parent().replaceWith(
+                art(path.join(__dirname, 'templates/description.art'), {
+                    image: {
+                        src: (e.prop('src') ?? e.prop('_src')).split(/\?/)[0],
+                        width: e.prop('data-w'),
+                        height: e.prop('data-h'),
+                    },
+                })
+            );
+        }
     });
     $('p, span').each((_, e) => {
         e = $(e);
@@ -188,7 +190,7 @@ const fetchItem = async (item) => {
     const { data: detailResponse } = await got(item.link);
 
     const state = parseInitialState(detailResponse);
-    const data = state.briefStoreModule?.brief_detail.brief ?? state.articleDetail?.articleDetail ?? undefined;
+    const data = state?.briefStoreModule?.brief_detail.brief ?? state?.articleDetail?.articleDetail ?? undefined;
 
     if (!data) {
         return item;
